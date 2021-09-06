@@ -1,0 +1,31 @@
+name: 'Sanitize Branch Name'
+description: 'Determine & Sanitize branch name of any special characters, for use in artifact upload actions'
+outputs:
+  branch-name:
+    description: "Determined branch name"
+    value: ${{ steps.determine_branch.outputs.branch_name }}
+  sanitized-branch-name:
+    description: "Determined branch name without any forward slashes"
+    value: ${{ steps.sanitize_branch.outputs.sanitized_branch_name }}    
+runs:
+  using: "composite"
+  steps:
+    - name: "Determine Branch"
+      id: determine_branch
+      shell: bash
+      run: |
+        BRANCH=${{ github.head_ref }}
+        if [ "$BRANCH" == "" ]; then
+            BRANCH=$(echo ${{ github.ref }} | sed 's/refs\/heads\///');
+        fi;
+        echo "Determined branch: $BRANCH"
+        echo "::set-output name=branch_name::$BRANCH";
+
+    - name: "Sanitize Branch name"
+      id: sanitize_branch
+      shell: bash
+      run: |
+        SANITIZED_BRANCH_NAME=$(echo -n ${{ steps.determine_branch.outputs.branch_name }} | tr "/" "-")
+        echo "Sanitized branch name: $SANITIZED_BRANCH_NAME"
+        echo ::set-output name=sanitized_branch_name::$SANITIZED_BRANCH_NAME;
+
