@@ -19,7 +19,7 @@ runs:
             BRANCH=$(echo ${{ github.ref }} | sed 's/refs\/heads\///');
         fi;
         echo "Determined branch: $BRANCH"
-        echo "::set-output name=branch_name::$BRANCH";
+        echo "branch_name=$BRANCH" >> $GITHUB_OUTPUT;
 
     - name: "Sanitize Branch name"
       id: sanitize_branch
@@ -27,5 +27,5 @@ runs:
       run: |
         SANITIZED_BRANCH_NAME=$(echo -n ${{ steps.determine_branch.outputs.branch_name }} | tr "/" "-")
         echo "Sanitized branch name: $SANITIZED_BRANCH_NAME"
-        echo ::set-output name=sanitized_branch_name::$SANITIZED_BRANCH_NAME;
+        echo "sanitized_branch_name=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT;
 
